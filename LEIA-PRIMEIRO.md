@@ -1,6 +1,6 @@
 # Espaço Café · PAES Cabo
 
-Comece abrindo **COMECE-AQUI.html** com dois cliques. Ele é um guia visual que funciona mesmo antes de instalar o sistema.
+Se o Espaço Café já estiver instalado, comece por **ATUALIZAR-COZINHA.html**, que explica como aplicar a atualização sem recriar o projeto. Para uma instalação nova, abra **COMECE-AQUI.html**.
 
 O projeto foi preparado para **VS Code → GitHub → Vercel**, com **Supabase** para autenticação, banco, fotos e atualização da equipe. Não utiliza um servidor próprio nem chaves secretas no navegador.
 
@@ -67,7 +67,7 @@ As quantidades de combos são independentes. Separe o estoque que irá para comb
 | --- | --- |
 | Administração | Cardápio, fotos, estoque, equipe, configurações, caixa e cozinha |
 | Caixa | Pedidos, pagamentos, recibos, cancelamentos, retirada, entradas, sangrias e fechamento |
-| Cozinha | Ler pedidos pagos e avançar: na fila → em preparo → pronto → entregue |
+| Cozinha | Ler pedidos pagos e marcar **Pronto**; o caixa confirma a entrega em Pedidos |
 | Cliente sem login | Consultar cardápio, criar pedido pendente e acompanhar apenas o próprio link |
 
 O cliente recebe uma senha sequencial e um link com token aleatório. O painel público de retirada mostra **senhas**, sem expor o nome das pessoas.
@@ -91,7 +91,7 @@ O sistema é destinado à operação do café da igreja, com o link/QR divulgado
 ## 7. Encerrar um domingo
 
 1. Pause os pedidos pelo celular nas Configurações.
-2. Entregue os pedidos prontos, resolva os restantes e cancele comandas abandonadas.
+2. Entregue os pedidos prontos e, no perfil do caixa ou administrador, abra **Pedidos → Abrir → Confirmar entrega**. Resolva os restantes e cancele comandas abandonadas.
 3. Registre entradas extras e sangrias que de fato aconteceram.
 4. Clique em **Fechar caixa**, conte o dinheiro físico e informe o valor.
 5. O sistema calcula: fundo inicial + vendas em dinheiro − devoluções em dinheiro + entradas − sangrias. Pix e cartão ficam separados.

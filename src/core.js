@@ -1,5 +1,5 @@
 export const CATEGORIES=['Salgados','Doces','Bebidas','Combos'];
-export const STATUS={queued:'Na fila',preparing:'Em preparo',ready:'Pronto para retirar',delivered:'Entregue',cancelled:'Cancelado'};
+export const STATUS={queued:'A preparar',preparing:'A preparar',ready:'Pronto para retirar',delivered:'Entregue',cancelled:'Cancelado'};
 export const PAYMENT={pending:'Falta pagar',paid:'Pago',refunded:'Devolvido'};
 export const METHODS={dinheiro:'Dinheiro',pix:'Pix',cartao:'Cartão'};
 export const ROLES={admin:'Administração',caixa:'Caixa',cozinha:'Cozinha'};
@@ -18,8 +18,8 @@ export const number=n=>String(n).padStart(3,'0');
 export const time=d=>d?new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Recife',hour:'2-digit',minute:'2-digit'}).format(new Date(d)):'—';
 export const date=d=>d?new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Recife',dateStyle:'short',timeStyle:'short'}).format(new Date(d)):'—';
 export const age=d=>Math.max(0,Math.floor((Date.now()-new Date(d).getTime())/60000));
-export const nextStatus=s=>({queued:'preparing',preparing:'ready',ready:'delivered'}[s]);
-export const nextLabel=s=>({queued:'Começar preparo',preparing:'Marcar pronto',ready:'Confirmar entrega'}[s]);
+export const nextStatus=s=>({queued:'ready',preparing:'ready',ready:'delivered'}[s]);
+export const nextLabel=s=>({queued:'Marcar pronto',preparing:'Marcar pronto',ready:'Confirmar entrega'}[s]);
 export function safeImage(value,category='Salgados') {
  const fallback='/images/'+({Salgados:'salgados',Doces:'doces',Bebidas:'bebidas',Combos:'combos'}[category]||'salgados')+'.svg';
  if(typeof value!=='string'||!value)return fallback;

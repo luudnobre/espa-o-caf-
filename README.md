@@ -2,14 +2,14 @@
 
 Aplicação para operação do café após o culto: cardápio público, pedidos, caixa, cozinha, estoque, retirada e recibos. Frontend em Vite/JavaScript. Supabase fornece Postgres, Auth, Storage e Realtime.
 
-Para instalar, abra **COMECE-AQUI.html** ou leia **LEIA-PRIMEIRO.md**.
+Para uma instalação nova, abra **COMECE-AQUI.html**. Se você já usa o Espaço Café, abra **ATUALIZAR-COZINHA.html** antes de publicar: a alteração requer atualizar também uma função no Supabase.
 
 ## Fluxo principal
 
 1. A administração publica alimentos e ajusta estoque por quantidade.
 2. Caixa ou cliente registra a comanda. O banco calcula os preços e reserva unidades em uma transação.
 3. A equipe confirma um recebimento real. O pedido passa de pendente para pago.
-4. A cozinha avança as etapas: fila, preparo, pronto e entregue.
+4. A cozinha recebe os pedidos pagos e toca em **Pronto** uma única vez. Quando houver a retirada, o caixa ou a administração abre **Pedidos** e confirma a entrega.
 5. O cliente consulta seu pedido por um token aleatório. O painel de TV mostra apenas senhas.
 6. No encerramento, o caixa registra o valor físico contado. O banco calcula esperado e diferença, separando Pix e cartão.
 
