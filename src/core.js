@@ -13,6 +13,11 @@ export function cents(value,{zero=false}={}) {
  const [a,b='']=s.split('.');const n=Number(a)*100+Number(b.padEnd(2,'0'));
  if(!Number.isSafeInteger(n)||n<(zero?0:1)||n>10000000)throw Error('Valor fora do limite.');return n;
 }
+export function discountCents(value,total) {
+ const discount=String(value??'').trim()?cents(value,{zero:true}):0;
+ if(!Number.isSafeInteger(total)||total<1||discount>=total)throw Error('O desconto deve ser menor que o total do pedido.');
+ return discount;
+}
 export const priceInput=v=>(Number(v||0)/100).toFixed(2).replace('.',',');
 export const number=n=>String(n).padStart(3,'0');
 export const time=d=>d?new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Recife',hour:'2-digit',minute:'2-digit'}).format(new Date(d)):'—';

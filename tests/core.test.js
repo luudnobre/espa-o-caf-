@@ -1,12 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {cents,totals,csvText,pixPayload,crc16,e,safeImage,uuid} from '../src/core.js';
+import {cents,discountCents,totals,csvText,pixPayload,crc16,e,safeImage,uuid} from '../src/core.js';
 import {receiptHTML} from '../src/receipt.js';
 test('valores brasileiros preservam centavos e rejeitam formatos ambíguos',()=>{assert.equal(cents('R$ 1.234,56'),123456);assert.equal(cents('7,50'),750);assert.equal(cents('0,00',{zero:true}),0);for(const s of ['-1','12,345','2.1.4','abc',''])assert.throws(()=>cents(s));});
+test('desconto em reais preserva centavos e não pode atingir ou ultrapassar o total',()=>{assert.equal(discountCents('3,00',2000),300);assert.equal(2000-discountCents('3,00',2000),1700);assert.equal(discountCents('',2000),0);assert.throws(()=>discountCents('20,00',2000));assert.throws(()=>discountCents('20,01',2000));assert.throws(()=>discountCents('-1',2000));});
 test('fechamento separa dinheiro, Pix, sangrias, cancelamentos e troco',()=>{const s={session_id:'s',sessions:[{id:'s',opening_cash_cents:5000}],orders:[{payment_status:'paid',status:'delivered',total_cents:700,items:[{product_id:'a',name:'Café',quantity:1,price_cents:700}]},{payment_status:'pending',status:'queued',total_cents:900},{payment_status:'refunded',status:'cancelled',total_cents:800}],payments:[{method:'dinheiro',amount_cents:700},{method:'pix',amount_cents:1000},{method:'pix',amount_cents:-1000}],cash_moves:[{direction:'entrada',amount_cents:1000},{direction:'saida',amount_cents:300}]};const t=totals(s);assert.equal(t.revenue,700);assert.equal(t.expected,6400);assert.equal(t.methods.pix,0);assert.equal(t.pending_cents,900);assert.equal(t.ranking[0].quantity,1);});
 test('CSV protege fórmulas e mantém aspas, vírgulas e quebras de linha',()=>{const text=csvText([['nome','valor'],['Bolo, café','="perigo"'],['Um "bom" encontro','7,00']]);assert.ok(text.startsWith('\uFEFF'));assert.ok(text.includes('"\'=""perigo"""'));assert.ok(text.includes('Um ""bom"" encontro'));});
 test('Pix usa CRC correto e valor exato em reais',()=>{assert.equal(crc16('123456789'),'29B1');const p=pixPayload('cafe@example.test','PAES CABO','CABO',1290,'CAFE42');assert.ok(p.includes('540512.90'));assert.ok(p.includes('cafe@example.test'));assert.equal(p.slice(-4),crc16(p.slice(0,-4)));});
 test('recibo só afirma pagamento para pedido pago e não cancelado',()=>{const order={number:1,customer_name:'<script>alert(1)</script>',created_at:'2026-11-06T20:00:00Z',items:[{name:'Café',quantity:1,price_cents:500}],total_cents:500,status:'queued',payment_status:'pending'};const pending=receiptHTML(order);assert.ok(pending.includes('COMANDA · FALTA PAGAR'));assert.ok(!pending.includes('<script>'));assert.ok(pending.includes('&lt;script&gt;'));assert.ok(receiptHTML({...order,payment_status:'paid'}).includes('RECIBO DE PAGAMENTO'));assert.ok(receiptHTML({...order,payment_status:'refunded',status:'cancelled'}).includes('PEDIDO CANCELADO'));});
+test('recibo discrimina subtotal, desconto, total líquido e troco',()=>{const html=receiptHTML({number:2,customer_name:'Lud',created_at:'2026-11-06T20:00:00Z',items:[{name:'Café',quantity:2,price_cents:1000}],discount_cents:300,total_cents:1700,status:'queued',payment_status:'paid',payment_method:'dinheiro',cash_received_cents:2000});assert.match(html,/Subtotal/);assert.match(html,/Desconto/);assert.ok(html.includes('20,00'));assert.ok(html.includes('17,00'));assert.ok(html.includes('3,00'));assert.match(html,/Troco:/);});
 test('links de imagens e textos não executam conteúdo injetado',()=>{assert.equal(safeImage('javascript:alert(1)'),'/images/salgados.svg');assert.equal(safeImage('/images/../segredo'),'/images/salgados.svg');assert.equal(e('<img onerror="x">'),'&lt;img onerror=&quot;x&quot;&gt;');assert.match(uuid(),/^[0-9a-f-]{36}$/);});
 
 test('cozinha agrupa pedidos pagos, incluindo o preparo antigo, e mostra somente Pronto', async()=>{
@@ -49,5 +51,9 @@ test('demonstração envia pedido pago à cozinha e só caixa confirma a retirad
   sessionStorage.setItem('cafe-demo-role','caixa');
   await demoRPC('cafe_advance_order',{p_id:order.id,p_status:'delivered'});
   assert.ok(!(await demoRPC('cafe_board')).ready.some(o=>o.number===order.number));
+  const pending=(await demoRPC('cafe_staff_state')).orders.find(o=>o.payment_status==='pending');
+  const discounted=await demoRPC('cafe_pay_order_discount',{p_id:pending.id,p_method:'dinheiro',p_received:1400,p_discount:300});
+  assert.equal(discounted.total_cents,1100);assert.equal(discounted.discount_cents,300);
+  assert.equal((await demoRPC('cafe_staff_state')).payments.find(p=>p.order_id===pending.id).amount_cents,1100);
  }finally{for(const [key,value] of Object.entries(previous)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}}
 });

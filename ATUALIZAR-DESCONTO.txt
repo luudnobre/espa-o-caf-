@@ -1,0 +1,40 @@
+ESPAÇO CAFÉ — PROJETO COMPLETO COM DESCONTO NO CAIXA
+
+Este ZIP contém o código completo do Espaço Café, incluindo a cozinha e a
+alteração do desconto. Os produtos, pedidos, usuários e pagamentos existentes
+continuam no seu Supabase e não são copiados para o ZIP.
+
+1. EXTRAIA O ZIP E ATUALIZE OS ARQUIVOS
+Abra no VS Code a pasta do seu projeto atual, a mesma que contém package.json.
+Não apague nem substitua a pasta inteira do projeto: ela tem sua conexão com
+o GitHub e pode conter o arquivo .env.local do seu computador.
+Na pasta espaco-cafe extraída, abra src e copie estes cinco arquivos:
+  api.js, core.js, demo.js, main.js e receipt.js.
+Cole esses cinco arquivos dentro da pasta src do seu projeto e confirme
+Substituir, caso apareça essa pergunta. NÃO substitua a pasta src inteira.
+Copie também o arquivo supabase/05-desconto-caixa.sql do ZIP para dentro da
+pasta supabase do projeto. Não é necessário substituir as demais pastas.
+
+2. ATUALIZE O SUPABASE QUE O SITE USA
+Abra https://supabase.com/dashboard/project/pvpkougbveygnspoxdfe/sql/new
+No VS Code, abra supabase/05-desconto-caixa.sql, copie o conteúdo inteiro,
+cole no SQL Editor e clique em Run. Deve aparecer: Desconto do caixa atualizado
+com sucesso. O arquivo adiciona as regras de desconto sem apagar pedidos.
+Não execute novamente 01-estrutura.sql, nem crie outro projeto.
+
+3. PUBLIQUE NO SITE
+No terminal do VS Code, dentro da pasta do projeto, execute uma linha por vez:
+
+git add src/api.js src/core.js src/demo.js src/main.js src/receipt.js supabase/05-desconto-caixa.sql
+git commit -m "Adiciona desconto no caixa"
+git push
+
+Como o GitHub está conectado à Vercel, aguarde o novo deployment aparecer como
+Ready. Atualize o navegador antes de testar. Não é preciso alterar as variáveis.
+
+4. COMO USAR
+Em Novo pedido, escolha a forma de pagamento e informe o desconto em reais.
+Para um pedido já criado, vá em Pedidos > Abrir > Confirmar pagamento.
+Confira o valor final antes de confirmar. O desconto aparece no recibo e é
+registrado nos relatórios. Exemplo: 20,00 - 3,00 = 17,00.
+O desconto deve ser menor que o valor total; o valor mínimo final é R$ 0,01.
